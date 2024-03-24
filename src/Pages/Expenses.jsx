@@ -14,6 +14,8 @@ const Expenses = () => {
   const [expenseDate, setExpenseDate] = useState("");
   const [expenses, setExpenses] = useState([]);
   const [isAddExpense,setIsAddExpense] = useState(false);
+  const [expenseFilterCategoryId,setExpenseFilterCategoryId] = useState("none");
+
 
   const addExpenseCategory = async (e) => {
     try {
@@ -67,7 +69,7 @@ const Expenses = () => {
       setExpenseTitle("");
       setExpenseAmount(0);
       setExpenseDate("");
-      setExpenseCategory("");
+      setExpenseCategory(expenseCategories[0].categoryname);
     } catch (error) {
       console.log(error);
       setAddExpenseMsg(error.response.data);
@@ -124,6 +126,8 @@ const Expenses = () => {
       console.log(error);
     }
   };
+
+  console.log(expenseCategory);
 
   useEffect(() => {
     getAllExpenseCategories();
@@ -236,7 +240,23 @@ const Expenses = () => {
       </div>}
       <div className="m-10 flex flex-col gap-2 p-4">
         <h1 className="text-xl text-blue-500 font-semibold">Your expenses</h1>
-        {expenses?.map((expense) => {
+        {expenses.length!==0 ?  <>
+         <div className="border-2 rounded-lg p-2 flex items-center gap-2">
+            <p>Filter by category</p>
+            <select className="border-2 rounded-lg p-2" value={expenseFilterCategoryId} onChange={(e) => setExpenseFilterCategoryId(e.target.value)} name="expenseFilterCategoryId">
+                <option value="none">none</option>
+                {expenseCategories?.map((item,i)=>{
+                    return <option key={item.expensecategoryid} value={item.expensecategoryid}>{item.categoryname}</option>
+                })}
+            </select>
+        </div>
+        {expenses?.filter((expense) => {
+            if(expenseFilterCategoryId==="none"){
+                return expense;
+            } else {
+                return expense.expensecategoryid===expenseFilterCategoryId;
+            }
+        })?.map((expense) => {
           return (
             <ExpenseCard
               key={expense.expenseid}
@@ -252,6 +272,18 @@ const Expenses = () => {
             />
           );
         })}
+        {expenses?.filter((expense) => {
+            if(expenseFilterCategoryId==="none"){
+                return expense;
+            } else {
+                return expense.expensecategoryid===expenseFilterCategoryId;
+            }
+        }).length===0 && <div className="my-20 flex justify-center text-4xl text-blue-400">
+        You have no expenses in this category
+        </div>}
+        </> : <div className="my-20 flex justify-center text-4xl text-blue-400">
+            You have no expenses
+            </div>}
       </div>
     </>
   );

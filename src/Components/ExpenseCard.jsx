@@ -20,7 +20,7 @@ const ExpenseCard = ({
   const [newExpenseCategory, setNewExpenseCategory] = useState("");
   const [newExpenseDate, setNewExpenseDate] = useState("");
   const [expenseEditId, setExpenseEditId] = useState(null);
-
+  const [expenseEditErrorMsg,setExpenseEditErrorMsg] = useState("");
   const [isEditExpense, setIsEditExpense] = useState(false);
 
   const getExpenseCategoryNameById = async () => {
@@ -84,6 +84,10 @@ const ExpenseCard = ({
       setExpenseEditId(null);
     } catch (error) {
       console.log(error);
+      setExpenseEditErrorMsg(error.response.data.message);
+      setTimeout(()=>{
+        setExpenseEditErrorMsg("");
+      },3000)
     }
   };
 
@@ -181,6 +185,9 @@ const ExpenseCard = ({
               >
                 Edit
               </button>
+            </div>
+            <div className="text-red-500">
+                {expenseEditErrorMsg}
             </div>
           </>
         ) : (
