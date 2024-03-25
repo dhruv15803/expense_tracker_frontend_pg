@@ -17,6 +17,9 @@ const Expenses = () => {
   const [expenseFilterCategoryId, setExpenseFilterCategoryId] =
     useState("none");
   const [sortByExpenseAmount, setSortByExpenseAmount] = useState(0);
+  const [sortByExpenseDate,setSortByExpenseDate] = useState(0);
+  const [isSortByAmount,setIsSortByAmount] = useState(true);
+  const [isSortByDate,setIsSortByDate] = useState(false);
 
   const addExpenseCategory = async (e) => {
     try {
@@ -115,6 +118,18 @@ const Expenses = () => {
     }
   };
 
+  const getAllSortedExpensesByDate = async () => {
+try {
+      const response = await axios.post(`${backendUrl}/expense/getAllSortedExpensesByDate`,{
+        sortByExpenseDate,
+      },{withCredentials:true});
+      console.log(response);
+      setExpenses(response.data.expenses);
+} catch (error) {
+  console.log(error);
+}
+  }
+
   const getAllExpenses = async () => {
     try {
       const response = await axios.get(`${backendUrl}/expense/getAllExpenses`, {
@@ -148,6 +163,10 @@ const Expenses = () => {
   useEffect(() => {
     getAllSortedExpenses();
   }, [sortByExpenseAmount]);
+
+  useEffect(()=>{
+    getAllSortedExpensesByDate();
+  },[sortByExpenseDate])
 
   useEffect(() => {
     getAllExpenseCategories();
@@ -295,7 +314,7 @@ const Expenses = () => {
                   })}
                 </select>
               </div>
-              <div className="flex items-center gap-2">
+              {isSortByAmount && <div className="flex items-center gap-2">
                 <p>Sort by amount</p>
                 <select
                   value={sortByExpenseAmount}
@@ -306,7 +325,28 @@ const Expenses = () => {
                   <option value={1}>low to high</option>
                   <option value={-1}>high to low</option>
                 </select>
-              </div>
+              </div>}
+              {!isSortByAmount && <div className="flex items-center gap-2">
+                <input checked={isSortByAmount} onChange={() => {
+                setIsSortByAmount(true);
+                setIsSortByDate(false);
+              }} type="checkbox"/>
+              <p>Sort by amount</p>
+              </div>}
+              {!isSortByDate &&  <div className="flex items-center gap-2"><input checked={isSortByDate} onChange={() => {
+                setIsSortByDate(true);
+                setIsSortByAmount(false);
+              } } type="checkbox" name="" id="" />
+              <p>Sort by date</p>
+               </div> }
+              {isSortByDate && <div className="flex items-center gap-2">
+                <p>Sort by date</p>
+                <select value={sortByExpenseDate} onChange={(e) => setSortByExpenseDate(e.target.value)} className="border-2 rounded-lg p-2" name="" id="">
+                  <option value={0}>none</option>
+                  <option value={1}>oldest to newest</option>
+                  <option value={-1}>newest to oldest</option>
+                </select>
+              </div>}
             </div>
             {expenses
               ?.filter((expense) => {
