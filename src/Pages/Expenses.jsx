@@ -20,6 +20,8 @@ const Expenses = () => {
   const [sortByExpenseDate,setSortByExpenseDate] = useState(0);
   const [isSortByAmount,setIsSortByAmount] = useState(true);
   const [isSortByDate,setIsSortByDate] = useState(false);
+  const [totalExpense,setTotalExpense] = useState(0);
+
 
   const addExpenseCategory = async (e) => {
     try {
@@ -158,6 +160,20 @@ try {
     }
   };
 
+  const getTotalExpense = () => {
+    let sum = 0;
+    for (let i=0;i<expenses.length;i++){
+      if(expenseFilterCategoryId==="none"){
+        sum = sum + expenses[i].expenseamount;
+      } else {
+        if(expenses[i].expensecategoryid===expenseFilterCategoryId){
+          sum = sum + expenses[i].expenseamount;
+        }
+      }
+    }
+    setTotalExpense(sum);
+  }
+
   console.log(expenseCategory);
 
   useEffect(() => {
@@ -167,6 +183,10 @@ try {
   useEffect(()=>{
     getAllSortedExpensesByDate();
   },[sortByExpenseDate])
+
+  useEffect(()=>{
+    getTotalExpense();
+  },[expenses,expenseFilterCategoryId])
 
   useEffect(() => {
     getAllExpenseCategories();
@@ -372,6 +392,15 @@ try {
                   />
                 );
               })}
+            {expenses?.filter((expense) => {
+              if(expenseFilterCategoryId==="none"){
+                return expense;
+              } else {
+                return expense.expensecategoryid===expenseFilterCategoryId;
+              }
+            })?.length!==0 && <div className="flex items-center my-4 text-xl text-blue-500">
+              Total expense : Rs {totalExpense}
+            </div>}
             {expenses?.filter((expense) => {
               if (expenseFilterCategoryId === "none") {
                 return expense;
