@@ -67,6 +67,7 @@ const ExpenseCard = ({
         { withCredentials: true }
       );
       console.log(response);
+      
       const newExpenses = expenses.map((item) => {
         if(item.expenseid===expenseEditId){
             return response.data.updatedExpense;

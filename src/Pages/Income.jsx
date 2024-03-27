@@ -77,6 +77,23 @@ const Income = () => {
     }
   };
 
+  const deleteIncome = async (id) => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/income/delete`,
+        {
+          incomeid: id,
+        },
+        { withCredentials: true }
+      );
+      console.log(response);
+      const newIncomes = incomes.filter((income) => income.incomeid !== id);
+      setIncomes(newIncomes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getAllIncomes = async () => {
     try {
       const response = await axios.get(`${backendUrl}/income/getAllIncomes`, {
@@ -229,11 +246,15 @@ const Income = () => {
           return (
             <IncomeCard
               key={income.incomeid}
+              id={income.incomeid}
               title={income.incometitle}
               categoryid={income.incomecategoryid}
               amount={income.incomeamount}
               date={income.incomedate}
               incomeCategories={incomeCategories}
+              incomes={incomes}
+              setIncomes={setIncomes}
+              deleteIncome={deleteIncome}
             />
           );
         })}
