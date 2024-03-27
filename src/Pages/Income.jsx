@@ -15,6 +15,8 @@ const Income = () => {
   const [addIncomeMsg, setAddIncomeMsg] = useState({});
   const [isAddIncome, setIsAddIncome] = useState(false);
   const [incomeFilterCategoryId, setIncomeFilterCategoryId] = useState("none");
+  const [sortByIncomeAmount, setSortByIncomeAmount] = useState(0);
+  const [sortByIncomeDate, setSortByIncomeDate] = useState(0);
 
   const addIncomeCategory = async (e) => {
     try {
@@ -95,6 +97,38 @@ const Income = () => {
     }
   };
 
+  const getAllSortedIncomes = async () => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/income/getAllSortedIncomes`,
+        {
+          sortByIncomeAmount,
+        },
+        { withCredentials: true }
+      );
+      console.log(response);
+      setIncomes(response.data.incomes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAllSortedIncomesByDate = async () => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/income/getAllSortedIncomesByDate`,
+        {
+          sortByIncomeDate,
+        },
+        { withCredentials: true }
+      );
+      console.log(response);
+      setIncomes(response.data.incomes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getAllIncomes = async () => {
     try {
       const response = await axios.get(`${backendUrl}/income/getAllIncomes`, {
@@ -122,6 +156,14 @@ const Income = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    getAllSortedIncomes();
+  }, [sortByIncomeAmount]);
+
+  useEffect(() => {
+    getAllSortedIncomesByDate();
+  }, [sortByIncomeDate]);
 
   useEffect(() => {
     getAllIncomeCategories();
@@ -266,35 +308,63 @@ const Income = () => {
                 })}
               </select>
             </div>
+            <div className="flex items-center gap-2">
+              <p>Sort by amount</p>
+              <select
+                className="border-2 rounded-lg p-2"
+                value={sortByIncomeAmount}
+                onChange={(e) => setSortByIncomeAmount(e.target.value)}
+                name="sortByIncomeAmount"
+              >
+                <option value={0}>none</option>
+                <option value={1}>low to high</option>
+                <option value={-1}>high to low</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <p>Sort by date</p>
+              <select
+                className="border-2 rounded-lg p-2"
+                name="sortByIncomeDate"
+                value={sortByIncomeDate}
+                onChange={(e) => setSortByIncomeDate(e.target.value)}
+              >
+                <option value={0}>none</option>
+                <option value={1}>oldest to newest</option>
+                <option value={-1}>newest to oldest</option>
+              </select>
+            </div>
           </div>
         )}
-        {incomes?.filter((income) => {
-          if(incomeFilterCategoryId==="none"){
-            return income;
-          } else {
-            return income.incomecategoryid===incomeFilterCategoryId;
-          }
-        })?.map((income) => {
-          return (
-            <IncomeCard
-              key={income.incomeid}
-              id={income.incomeid}
-              title={income.incometitle}
-              categoryid={income.incomecategoryid}
-              amount={income.incomeamount}
-              date={income.incomedate}
-              incomeCategories={incomeCategories}
-              incomes={incomes}
-              setIncomes={setIncomes}
-              deleteIncome={deleteIncome}
-            />
-          );
-        })}
+        {incomes
+          ?.filter((income) => {
+            if (incomeFilterCategoryId === "none") {
+              return income;
+            } else {
+              return income.incomecategoryid === incomeFilterCategoryId;
+            }
+          })
+          ?.map((income) => {
+            return (
+              <IncomeCard
+                key={income.incomeid}
+                id={income.incomeid}
+                title={income.incometitle}
+                categoryid={income.incomecategoryid}
+                amount={income.incomeamount}
+                date={income.incomedate}
+                incomeCategories={incomeCategories}
+                incomes={incomes}
+                setIncomes={setIncomes}
+                deleteIncome={deleteIncome}
+              />
+            );
+          })}
         {incomes.filter((income) => {
-          if(incomeFilterCategoryId==="none"){
+          if (incomeFilterCategoryId === "none") {
             return income;
           } else {
-            return income.incomecategoryid===incomeFilterCategoryId;
+            return income.incomecategoryid === incomeFilterCategoryId;
           }
         })?.length === 0 && (
           <div className="my-20 flex justify-center text-4xl text-blue-400">
