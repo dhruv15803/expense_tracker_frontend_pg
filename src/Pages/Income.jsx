@@ -14,6 +14,7 @@ const Income = () => {
   const [addIncomeCategoryNameMsg, setAddIncomeCategoryNameMsg] = useState({});
   const [addIncomeMsg, setAddIncomeMsg] = useState({});
   const [isAddIncome, setIsAddIncome] = useState(false);
+  const [incomeFilterCategoryId, setIncomeFilterCategoryId] = useState("none");
 
   const addIncomeCategory = async (e) => {
     try {
@@ -242,7 +243,38 @@ const Income = () => {
       )}
       <div className="flex flex-col m-10 p-4 gap-2">
         <h1 className="text-blue-500 font-semibold text-xl">Your income</h1>
-        {incomes?.map((income) => {
+        {incomes.length !== 0 && (
+          <div className="border-2 rounded-lg p-2 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <p>Filter by category</p>
+              <select
+                className="border-2 rounded-lg p-2"
+                value={incomeFilterCategoryId}
+                onChange={(e) => setIncomeFilterCategoryId(e.target.value)}
+                name="incomeFilterCategoryId"
+              >
+                <option value="none">none</option>
+                {incomeCategories.map((category) => {
+                  return (
+                    <option
+                      key={category.incomecategoryid}
+                      value={category.incomecategoryid}
+                    >
+                      {category.categoryname}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          </div>
+        )}
+        {incomes?.filter((income) => {
+          if(incomeFilterCategoryId==="none"){
+            return income;
+          } else {
+            return income.incomecategoryid===incomeFilterCategoryId;
+          }
+        })?.map((income) => {
           return (
             <IncomeCard
               key={income.incomeid}
@@ -258,6 +290,17 @@ const Income = () => {
             />
           );
         })}
+        {incomes.filter((income) => {
+          if(incomeFilterCategoryId==="none"){
+            return income;
+          } else {
+            return income.incomecategoryid===incomeFilterCategoryId;
+          }
+        })?.length === 0 && (
+          <div className="my-20 flex justify-center text-4xl text-blue-400">
+            You have no expenses
+          </div>
+        )}
       </div>
     </>
   );
