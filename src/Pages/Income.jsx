@@ -17,6 +17,10 @@ const Income = () => {
   const [incomeFilterCategoryId, setIncomeFilterCategoryId] = useState("none");
   const [sortByIncomeAmount, setSortByIncomeAmount] = useState(0);
   const [sortByIncomeDate, setSortByIncomeDate] = useState(0);
+  const [totalIncome,setTotalIncome] = useState(0);
+  const [isSortByAmount,setIsSortByAmount] = useState(true);
+  const [isSortByDate,setIsSortByDate] = useState(false);
+
 
   const addIncomeCategory = async (e) => {
     try {
@@ -129,6 +133,23 @@ const Income = () => {
     }
   };
 
+  const getTotalIncome = () => {
+    let total = 0;
+    for(let i = 0;i<incomes.length;i++){
+      if(incomeFilterCategoryId==="none"){
+        total = total + incomes[i].incomeamount;
+      } else {
+        if(incomes[i].incomecategoryid===incomeFilterCategoryId){
+          total = total + incomes[i].incomeamount;
+        } else {
+          continue;
+        }
+      }
+    }
+    setTotalIncome(total);
+  }
+
+
   const getAllIncomes = async () => {
     try {
       const response = await axios.get(`${backendUrl}/income/getAllIncomes`, {
@@ -164,6 +185,10 @@ const Income = () => {
   useEffect(() => {
     getAllSortedIncomesByDate();
   }, [sortByIncomeDate]);
+
+  useEffect(()=>{
+    getTotalIncome();
+  },[incomes,incomeFilterCategoryId])
 
   useEffect(() => {
     getAllIncomeCategories();
@@ -308,7 +333,14 @@ const Income = () => {
                 })}
               </select>
             </div>
-            <div className="flex items-center gap-2">
+            {isSortByDate && <div className="flex items-center gap-2">
+              <p>Sort by amount</p>
+              <input checked={isSortByAmount} onChange={() => {
+                setIsSortByAmount(true);
+                setIsSortByDate(false);
+            }} type="checkbox" name="isSortByAmount" id="" />
+            </div>}
+            {isSortByAmount && <div className="flex items-center gap-2">
               <p>Sort by amount</p>
               <select
                 className="border-2 rounded-lg p-2"
@@ -320,8 +352,15 @@ const Income = () => {
                 <option value={1}>low to high</option>
                 <option value={-1}>high to low</option>
               </select>
-            </div>
-            <div className="flex items-center gap-2">
+            </div>}
+            { isSortByAmount && <div className="flex items-center gap-2">
+              <p>Sort by date</p>
+               <input checked={isSortByDate} onChange={() => {
+              setIsSortByDate(true);
+              setIsSortByAmount(false);
+            }} type="checkbox" name="isSortByDate" id="" />
+            </div>}
+            {isSortByDate && <div className="flex items-center gap-2">
               <p>Sort by date</p>
               <select
                 className="border-2 rounded-lg p-2"
@@ -333,7 +372,7 @@ const Income = () => {
                 <option value={1}>oldest to newest</option>
                 <option value={-1}>newest to oldest</option>
               </select>
-            </div>
+            </div>}
           </div>
         )}
         {incomes
@@ -360,7 +399,7 @@ const Income = () => {
               />
             );
           })}
-        {incomes.filter((income) => {
+        {incomes?.filter((income) => {
           if (incomeFilterCategoryId === "none") {
             return income;
           } else {
@@ -368,9 +407,20 @@ const Income = () => {
           }
         })?.length === 0 && (
           <div className="my-20 flex justify-center text-4xl text-blue-400">
-            You have no expenses
+            You have no income
           </div>
         )}
+        {incomes?.filter((income) => {
+          if(incomeFilterCategoryId==="none"){
+            return income; 
+          } else {
+            return income.incomecategoryid===incomeFilterCategoryId;
+          }
+        })?.length!==0 && <>
+          <div className="flex items-center gap-2 rounded-lg p-2 text-blue-500 font-semibold text-xl">
+            <p>Total income: Rs {totalIncome}</p>
+          </div>
+        </>}
       </div>
     </>
   );

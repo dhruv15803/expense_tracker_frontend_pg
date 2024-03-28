@@ -21,7 +21,7 @@ const IncomeCard = ({
   const [newIncomeDate, setNewIncomeDate] = useState("");
   const [isEditIncome, setIsEditIncome] = useState(false);
   const [incomeEditId, setIncomeEditId] = useState(null);
-  const [editIncomeErrorMsg,setEditIncomeErrorMsg] = useState("");
+  const [editIncomeErrorMsg, setEditIncomeErrorMsg] = useState("");
 
   const getIncomeCategoryNameById = async () => {
     try {
@@ -54,12 +54,12 @@ const IncomeCard = ({
       );
       console.log(response);
       const newIncomes = incomes.map((income) => {
-        if(income.incomeid===incomeEditId){
+        if (income.incomeid === incomeEditId) {
           return response.data.newIncome;
         } else {
           return income;
         }
-      })
+      });
       setIncomes(newIncomes);
 
       setNewIncomeTitle("");
@@ -71,9 +71,9 @@ const IncomeCard = ({
     } catch (error) {
       console.log(error);
       setEditIncomeErrorMsg(error.response.data.message);
-      setTimeout(()=>{
+      setTimeout(() => {
         setEditIncomeErrorMsg("");
-      },3000)
+      }, 3000);
     }
   };
 
@@ -161,12 +161,20 @@ const IncomeCard = ({
         </div>
         {isEditIncome ? (
           <>
-            <div className="text-red-500">
-              {editIncomeErrorMsg}
-            </div>
+            <div className="text-red-500">{editIncomeErrorMsg}</div>
             <div className="flex items-center gap-2">
-              <button className="border-2 rounded-lg border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:duration-300 p-2" onClick={() => setIsEditIncome(false)}>Cancel</button>
-              <button className="border-2 rounded-lg border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:duration-300 p-2" onClick={editIncomeItem}>Edit</button>
+              <button
+                className="border-2 rounded-lg border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:duration-300 p-2"
+                onClick={() => setIsEditIncome(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="border-2 rounded-lg border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:duration-300 p-2"
+                onClick={editIncomeItem}
+              >
+                Edit
+              </button>
             </div>
           </>
         ) : (
